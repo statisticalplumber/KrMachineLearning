@@ -7,9 +7,11 @@ kr_clust = function(x, k){
   id = 1:nrow(x)
   cent = x[sample(id, k),]
   if(length(unique(x))>=k){
-    while(nrow(unique(cent))!=k){
+    cond = ifelse(is.vector(cent),length(unique(cent)), nrow(unique(cent)))
+    while(cond!=k){
       cent = x[sample(id, k),]
     }}else{stop("provide k greater than unique classes in input")}
+  cent = as.matrix(cent)
   row.names(cent)=1:k
   e = sum(cent)
   
@@ -28,11 +30,11 @@ kr_clust = function(x, k){
       val = as.numeric(row.names(as.array(d_list[which.min(d_list)])))
       res = append(res, val)
     }
-  
+    
     df = data.frame(x, clust = res)
     cent = aggregate(df[,-ncol(df)], by = list(df$clust), mean)
     row.names(cent) = cent[,1]
-    cent = cent[,-1]
+    cent = as.matrix(cent[,-1])
     e = abs(sum(cent_prev - cent))
   }
   list(df,cent, e)
